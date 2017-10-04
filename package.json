@@ -1,6 +1,6 @@
 {
-  "title": "KPS",
-  "description": "Tabris.js - KPS",
+  "title": "ARVONTAPELIT",
+  "description": "Tabris.js - ARVONTAPELIT",
   "category": "Small Apps",
   "main": "src/kps.js",
   "dependencies": {
