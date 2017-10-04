@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="kps.app" version="1.0.0">
-  <name>KPS</name>
+  <name>ARVONTAPELIT</name>
   <description>
-    Kivi paperi sakset peli
+    Arvontapelit Lotto Jokeri ja Eurojackpot
   </description>
-  <author email="tero.ulvinen@edu.vaasa.fi" href="http://vao.fi">
-    TUL
+  <author email="joona.koukkari2@edu.vaasa.fi" href="http://vamia.fi">
+    JJPK
   </author>
 </widget>
