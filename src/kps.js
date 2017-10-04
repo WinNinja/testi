@@ -1,175 +1,160 @@
-// tabrisjs-esimerkki: Kivi-paperi-sakset, TUL 2016/2017
+// arvotaan lottonumerot
+const {Button, TextView, ScrollView, ui} = require('tabris');
 
-// muuttujien alustukset
-var cpoints = 0 // koneen pisteet
-var upoints = 0 // pelaajan pisteet
+//_______________________________________LOTTO__________________________________________________________________________________________________________________________________________________________
 
-const {Button, ImageView, TextView, ui} = require('tabris');
+//LOTTOtaulukko
+var numerotaulukko = new Array("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39");
 
-// käyttäjän valintakuvat
-new ImageView({
-  width: 10, height: 10, 
-  layoutData: {width: 150,top: 30},
-  image: {src: "http://vaolabs.fi/tul/tabrisjs/kivi.png"},
-  highlightOnTouch: true
-}).on("tap", function() {
-  arvonta("kivi");  
+// Painike
+let buttonLotto = new Button({
+  centerX: 0, top: 100,
+  text: "Lotto"
 }).appendTo(ui.contentView);
+//________________________________________EUROJP________________________________________________________________________________________________________________________________________________________
+//EPtaulukko
+var EJPtaulukko = new Array("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50");
 
-new ImageView({
-  layoutData: {width: 150, top: 170},
-  image: {src: "http://vaolabs.fi/tul/tabrisjs/paperi.png"},
-  highlightOnTouch: true
-}).on("tap", function() {
-  arvonta("paperi");  
+//lisäEPtaulukko
+var LisäEJPtaulukko = new Array("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
+// Painike
+let buttonEuroJackpot = new Button({
+  centerX: -100, top: 100,
+  text: "EuroJackpot"
 }).appendTo(ui.contentView);
+//____________________________________________JOKERI____________________________________________________________________________________________________________________________________________________
 
-new ImageView({
-  layoutData: {width: 150, top: 320},
-  image: {src: "http://vaolabs.fi/tul/tabrisjs/sakset.png"},
-  highlightOnTouch: true
-}).on("tap", function() {
-  arvonta("sakset");  
+// Painike
+let buttonJokeri = new Button({
+  centerX: 100, top: 100,
+  text: "Jokeri"
 }).appendTo(ui.contentView);
+//______________________________________________________________________________________________________________________________________________________________________________________________________
+// TekstikenttÃ¤ koneen numeron nÃ¤yttÃ¤miseksi
+let koneennumero = new TextView({
+  centerX: 0, top: [buttonLotto, 50],
+  font: "24px"
+}).appendTo(ui.contentView);          
 
-// koneen vastauskuva
-var ccpic = new ImageView({
-  layoutData: {width: 150, top: 300, left: 200, top: 150},
-  highlightOnTouch: true
-}).on("tap", function() {
-  // 
-}).appendTo(ui.contentView);
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
 
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
 
-// "teksti: Pelaaja:"
-new TextView({
-  font: "12px",
-  layoutData: {left: 10, top: 10 },
-  text: "Pelaaja: "
-}).appendTo(ui.contentView);
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
 
-// "teksti: Kone:"
-new TextView({
-  font: "12px",
-  layoutData: {left: 200, top: 120 },
-  text: "Kone: "
-}).appendTo(ui.contentView);
-
-// tekstikenttä tulokselle
-var gameresult = new TextView({
-  font: "24px",
-  layoutData: {centerX: 0, top: 500 }
-}).appendTo(ui.contentView);
-
-// tekstikenttä pelaajan pisteille
-var userpoints = new TextView({
-  font: "24px",
-  layoutData: {left: 10, top: 500 },
-  text: "0"
-}).appendTo(ui.contentView);
-
-// tekstikenttä koneen pisteille
-var computerpoints = new TextView({
-  font: "24px",
-  layoutData: {left: 300, top: 500 },
-  text: "0"
-}).appendTo(ui.contentView);
-
-// koneen valinnan arvonta
-function arvonta(uc) {
-   
-  var cc = "";
-  
-  // arvo luku
-  var arvottuluku = Math.floor((Math.random() * 3) + 1);
-  
-  if (arvottuluku == 1) {
-  ccpic.set("image", "http://vaolabs.fi/tul/tabrisjs/kivi.png");
-  cc = "kivi";
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
   }
-  
-  if (arvottuluku == 2) {
-  ccpic.set("image", "http://vaolabs.fi/tul/tabrisjs/paperi.png");
-  cc = "paperi";
-  }
-  
-  if (arvottuluku == 3) {
-  ccpic.set("image", "http://vaolabs.fi/tul/tabrisjs/sakset.png");
-  cc = "sakset";
-  }
-  
-  // kutsutaan tarkistusta 
-  tarkistus(uc,cc);
-  
+
+  return array;
 }
+//______________________________LOTTO___________________________________________________________________________________________________________________________________________________________________
+  //kun nappia painetaan niin arvotaan numerot
+  buttonLotto.on('select', arvo).appendTo(ui.contentView);  
 
-// tarkistetaan miten kävi
-function tarkistus(uc, cc) {
+function arvo(){
   
-  // uc = käyttäjän valinta
-  // cc = koneen valinta
- 
-  // tasapeli
-  if ((cc == "kivi") && (uc == "kivi")){
-  gameresult.set("text", "Tasapeli!");
-  }
+// numerotaulukko on sekoitettunumerotaulukko
+numerotaulukko = shuffle(numerotaulukko);
   
-  // tasapeli
-  if ((cc == "sakset") && (uc == "sakset")){
-  gameresult.set("text", "Tasapeli!");
-  }
+//numero1
+var numero1 = numerotaulukko[0];
   
-  // tasapeli
-  if ((cc == "paperi") && (uc == "paperi")){
-  gameresult.set("text", "Tasapeli!");
-  }
+//numero2
+var numero2 = numerotaulukko[1];
   
-  // kone voittaa
-  if ((cc == "kivi") && (uc == "sakset")){
-  gameresult.set("textColor", "red");
-  gameresult.set("text", "Kone voittaa!");
-  cpoints += 1;
-  computerpoints.set("text", cpoints);
-  }
+//numero3
+var numero3 = numerotaulukko[2];
     
-  // kone voittaa
-  if ((cc == "sakset") && (uc == "paperi")){
-  gameresult.set("textColor", "red");
-  gameresult.set("text", "Kone voittaa!");
-  cpoints += 1;
-  computerpoints.set("text", cpoints);
+//numero4
+var numero4 = numerotaulukko[3];
+  
+//numero5
+var numero5 = numerotaulukko[4]; 
+  
+//numero6
+var numero6 = numerotaulukko[5];
+  
+//numero7
+var numero7 = numerotaulukko[6]; 
+  
+  //siotetaan numerot textviewiin suraavalla tyylillä [numero], [numero]...
+  koneennumero.set("text",'[' + numero1 + ']' + ', ' + '[' + numero2 + ']' + ', ' + '[' + numero3 + ']' + ', ' + '[' + numero4 + ']' + ', ' + '[' + numero5 + ']' + ', ' + '[' + numero6 + ']' + ', ' + '[' + numero7 + ']');
   }
 
-  // kone voittaa
-  if ((cc == "paperi") && (uc == "kivi")){
-  gameresult.set("textColor", "red");
-  gameresult.set("text", "Kone voittaa!");
-  cpoints += 1;
-  computerpoints.set("text", cpoints);
-  }
- 
-  // käyttäjä voittaa
-  if ((cc == "kivi") && (uc == "paperi")){
-  gameresult.set("textColor", "green");
-  gameresult.set("text", "Pelaaja voittaa!");
-  upoints += 1;
-  userpoints.set("text", upoints);
-  }
-  
-  // käyttäjä voittaa
-  if ((cc == "paperi") && (uc == "sakset")){
-  gameresult.set("textColor", "green");
-  gameresult.set("text", "Pelaaja voittaa!");
-  upoints += 1;
-  userpoints.set("text", upoints);
-  }
-  
-  // käyttäjä voittaa
-  if ((cc == "sakset") && (uc == "kivi")){
-  gameresult.set("textColor", "green");
-  gameresult.set("text", "Pelaaja voittaa!");
-  upoints += 1;
-  userpoints.set("text", upoints);
-  }
-      
+//______________________________JOKERI__________________________________________________________________________________________________________________________________________________________________
+ //kun nappia painetaan niin arvotaan numerot
+  buttonJokeri.on('select', jokeriarvo).appendTo(ui.contentView);  
+
+//arvotaan jokerinumerolle numero
+function jokerinumeroarvonta(){
+var jokerinumero = Math.floor(Math.random() * 10);
+return jokerinumero;
 }
+
+function jokeriarvo(){
+  
+//numero1
+var numero1 = jokerinumeroarvonta();
+  
+//numero2
+var numero2 = jokerinumeroarvonta();
+  
+//numero3
+var numero3 = jokerinumeroarvonta();
+    
+//numero4
+var numero4 = jokerinumeroarvonta();
+  
+//numero5
+var numero5 = jokerinumeroarvonta(); 
+  
+//numero6
+var numero6 = jokerinumeroarvonta();
+  
+//numero7
+var numero7 = jokerinumeroarvonta(); 
+  
+  //siotetaan numerot textviewiin suraavalla tyylillä [numero], [numero]...
+  koneennumero.set("text",'[' + numero1 + ']' + ', ' + '[' + numero2 + ']' + ', ' + '[' + numero3 + ']' + ', ' + '[' + numero4 + ']' + ', ' + '[' + numero5 + ']' + ', ' + '[' + numero6 + ']' + ', ' + '[' + numero7 + ']');
+  }
+//____________________________________EUROJP____________________________________________________________________________________________________________________________________________________________
+ //kun nappia painetaan niin arvotaan numerot
+  buttonEuroJackpot.on('select', EJParvo).appendTo(ui.contentView); 
+
+function EJParvo(){
+  
+// numerotaulukko on sekoitettunumerotaulukko
+EJPtaulukko = shuffle(EJPtaulukko);
+LisäEJPtaulukko = shuffle(LisäEJPtaulukko);
+  
+//numero1
+var numero1 = EJPtaulukko[0];
+  
+//numero2
+var numero2 = EJPtaulukko[1];
+  
+//numero3
+var numero3 = EJPtaulukko[2];
+    
+//numero4
+var numero4 = EJPtaulukko[3];
+  
+//numero5
+var numero5 = EJPtaulukko[4]; 
+  
+//numero6
+var numero6 = LisäEJPtaulukko[1];
+  
+//numero7
+var numero7 = LisäEJPtaulukko[2]; 
+  
+  //siotetaan numerot textviewiin suraavalla tyylillä [numero], [numero]...
+  koneennumero.set("text",'[' + numero1 + ']' + ', ' + '[' + numero2 + ']' + ', ' + '[' + numero3 + ']' + ', ' + '[' + numero4 + ']' + ', ' + '[' + numero5 + ']' + ', *numerot* = ' + '[' + numero6 + ']' + ', ' + '[' + numero7 + ']');
+  }
